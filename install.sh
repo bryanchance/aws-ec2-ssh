@@ -96,9 +96,9 @@ PATH=${PATH}:/usr/local/bin
 tmpdir=$(mktemp -d)
 cd "$tmpdir"
 EC2SSH_GITHUB_VERSION=${EC2SSH_GITHUB_VERSION:-master}
-curl -L https://github.com/firespring/aws-ec2-ssh/archive/${EC2SSH_GITHUB_VERSION}.tar.gz | tar -xzf -
-cp "./aws-ec2-ssh-${EC2SSH_GITHUB_VERSION}/authorized_keys_command.sh" $AUTHORIZED_KEYS_COMMAND_FILE
-cp "./aws-ec2-ssh-${EC2SSH_GITHUB_VERSION}/import_users.sh" $IMPORT_USERS_SCRIPT_FILE
+curl -L https://github.com/firespring/aws-ec2-ssh/archive/${EC2SSH_GITHUB_VERSION}.tar.gz | tar -xzf - --strip 1
+cp ./authorized_keys_command.sh $AUTHORIZED_KEYS_COMMAND_FILE
+cp ./import_users.sh $IMPORT_USERS_SCRIPT_FILE
 
 if [ "${IAM_GROUPS}" != "" ]
 then
