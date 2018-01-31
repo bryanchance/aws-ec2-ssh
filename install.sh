@@ -87,21 +87,16 @@ export ASSUME_ROLE
 export USERADD_PROGRAM
 export USERADD_ARGS
 
-# check if AWS CLI exists
-if ! which aws; then
-    echo "aws executable not found - exiting!"
-    exit 1
-fi
-
-tmpdir=$(mktemp -d)
-cd "$tmpdir"
-
+# Install the aws cli
 AWSCLI_GITHUB_VERSION=${AWSCLI_GITHUB_VERSION:-develop}
 easy_install https://github.com/aws/aws-cli/archive/${AWSCLI_GITHUB_VERSION}.tar.gz
 PATH=${PATH}:/usr/local/bin
 
+# Pull down the latest from widdix
+tmpdir=$(mktemp -d)
+cd "$tmpdir"
 EC2SSH_GITHUB_VERSION=${EC2SSH_GITHUB_VERSION:-master}
-curl -L https://github.com/widdix/aws-ec2-ssh/archive/${EC2SSH_GITHUB_VERSION}.tar.gz | tar -xzf -
+curl -L https://github.com/firespring/aws-ec2-ssh/archive/${EC2SSH_GITHUB_VERSION}.tar.gz | tar -xzf -
 cp "./aws-ec2-ssh-${EC2SSH_GITHUB_VERSION}/authorized_keys_command.sh" $AUTHORIZED_KEYS_COMMAND_FILE
 cp "./aws-ec2-ssh-${EC2SSH_GITHUB_VERSION}/import_users.sh" $IMPORT_USERS_SCRIPT_FILE
 
