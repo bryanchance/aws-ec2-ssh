@@ -15,3 +15,5 @@ else
     echo "AuthorizedKeysCommandUser nobody" >> "$SSHD_CONFIG_FILE"
   fi
 fi
+
+sed -i -re "s@^[\s]*#[\s]*PermitRootLogin@PermitRootLogin@g" -e "s@^PermitRootLogin .*@PermitRootLogin no@g" "$SSHD_CONFIG_FILE"
