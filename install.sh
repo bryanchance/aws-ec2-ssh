@@ -2,7 +2,7 @@
 
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-hv] [-a ARN] [-i GROUP,GROUP,...] [-l GROUP,GROUP,...] [-s GROUP] [-p PROGRAM] [-u "ARGUMENTS"]
+Usage: ${0##*/} [-hv] [-a ARN] [-i GROUP,GROUP,...] [-l GROUP,GROUP,...] [-s GROUP] [-p PROGRAM] [-u "ARGUMENTS"] [-r RELEASE]
 Install import_users.sh and authorized_key_commands.
 
     -h                 display this help and exit
@@ -23,6 +23,9 @@ Install import_users.sh and authorized_key_commands.
                        Defaults to '/usr/sbin/useradd'
     -u "useradd args"  Specify arguments to use with useradd.
                        Defaults to '--create-home --shell /bin/bash'
+    -r release         Specify a release of aws-ec2-ssh to download from GitHub. This argument is
+                       passed to \`git clone -b\` and so works with branches and tags.
+                       Defaults to 'master'
 
 
 EOF
@@ -39,8 +42,9 @@ LOCAL_GROUPS=""
 ASSUME_ROLE=""
 USERADD_PROGRAM=""
 USERADD_ARGS=""
+RELEASE="master"
 
-while getopts :hva:i:l:s: opt
+while getopts :hva:i:l:s:p:u:r: opt
 do
     case $opt in
         h)
@@ -68,6 +72,9 @@ do
         u)
             USERADD_ARGS="$OPTARG"
             ;;
+        r)
+            RELEASE="$OPTARG"
+            ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
             show_help
@@ -87,16 +94,18 @@ export ASSUME_ROLE
 export USERADD_PROGRAM
 export USERADD_ARGS
 
-# Install the aws cli
-AWSCLI_GITHUB_VERSION=${AWSCLI_GITHUB_VERSION:-develop}
-easy_install https://github.com/aws/aws-cli/archive/${AWSCLI_GITHUB_VERSION}.tar.gz
-PATH=${PATH}:/usr/local/bin
+# check if AWS CLI exists
+if ! which aws; then
+  # Install the aws cli
+  AWSCLI_GITHUB_VERSION=${AWSCLI_GITHUB_VERSION:-develop}
+  easy_install https://github.com/aws/aws-cli/archive/${AWSCLI_GITHUB_VERSION}.tar.gz
+  PATH=${PATH}:/usr/local/bin
+fi
 
 # Pull down the latest from widdix
 tmpdir=$(mktemp -d)
 cd "$tmpdir"
-EC2SSH_GITHUB_VERSION=${EC2SSH_GITHUB_VERSION:-master}
-curl -L https://github.com/firespring/aws-ec2-ssh/archive/${EC2SSH_GITHUB_VERSION}.tar.gz | tar -xzf - --strip 1
+curl -L https://github.com/firespring/aws-ec2-ssh/archive/${RELEASE}.tar.gz | tar -xzf - --strip 1
 cp ./authorized_keys_command.sh $AUTHORIZED_KEYS_COMMAND_FILE
 cp ./import_users.sh $IMPORT_USERS_SCRIPT_FILE
 
@@ -145,4 +154,4 @@ chmod 0644 /etc/cron.d/import_users
 
 $IMPORT_USERS_SCRIPT_FILE
 
-./install_restart_sshs.sh
+./install_restart_sshd.sh

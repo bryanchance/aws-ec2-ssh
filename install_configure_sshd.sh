@@ -16,4 +16,4 @@ else
   fi
 fi
 
-sed -i -re "s:^PermitRootLogin .*:PermitRootLogin no:g" "$SSHD_CONFIG_FILE"
+sed -i -re "s@^[\s]*#[\s]*PermitRootLogin@PermitRootLogin@g" -e "s@^PermitRootLogin .*@PermitRootLogin no@g" "$SSHD_CONFIG_FILE"
