@@ -97,7 +97,7 @@ export USERADD_ARGS
 # check if AWS CLI exists
 if ! which aws; then
   # Install the aws cli
-  AWSCLI_GITHUB_VERSION=${AWSCLI_GITHUB_VERSION:-develop}
+  AWSCLI_GITHUB_VERSION=${AWSCLI_GITHUB_VERSION:-master}
   easy_install https://github.com/aws/aws-cli/archive/${AWSCLI_GITHUB_VERSION}.tar.gz
   PATH=${PATH}:/usr/local/bin
 fi
